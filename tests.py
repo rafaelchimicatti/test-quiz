@@ -130,3 +130,34 @@ def test_points_out_of_range():
 
     with pytest.raises(Exception):
         Question(title='q1', points=101)
+
+@pytest.fixture
+def question_with_choices():
+    q = Question(title='q1', max_selections=2)
+    c1 = q.add_choice('a', True)
+    c2 = q.add_choice('b', False)
+    c3 = q.add_choice('c', True)
+    return q, c1, c2, c3
+
+
+def test_correct_choices_with_fixture(question_with_choices):
+    q, c1, c2, c3 = question_with_choices
+
+    result = q.correct_selected_choices([c1.id, c3.id])
+
+    assert set(result) == {c1.id, c3.id}
+
+
+@pytest.fixture
+def empty_question():
+    return Question(title='empty')
+
+
+def test_add_choice_using_fixture(empty_question):
+    q = empty_question
+
+    choice = q.add_choice('nova alternativa')
+
+    assert len(q.choices) == 1
+    assert choice.id == 1
+    assert choice.text == 'nova alternativa'
